@@ -4,42 +4,36 @@ const bodyParser = require("body-parser");
 const app = express();
 
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(express.static("public"));
+
+var items = ["initial items"];
 
 app.get("/", function (req, res) {
 
     var today = new Date();
-    var currentDay = today.getDay();
-    var day = "";
 
-    switch (currentDay) {
-        case 0:
-            day = "Sunday"
-            break;
-        case 1:
-            day = "Monday"
-            break;
-        case 2:
-            day = "Tuesday"
-            break;
-        case 3:
-            day = "Wednesday"
-            break;
-        case 4:
-            day = "Thursday"
-            break;
-        case 5:
-            day = "Friday"
-            break;
-        case 6:
-            day = "Satday"
-            break;
-        default:
-            break;
-    }
+    var options = {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+    };
+
+    var day = today.toLocaleDateString("en-IN", options)
 
     res.render("list", {
-        kindOfDay: day
+        kindOfDay: day,
+        newListItems: items
     })
+})
+
+app.post("/", function (req, res) {
+    var newItem = req.body.newItem;
+    items.push(newItem);
+    res.redirect("/");
+
 })
 
 app.listen(3000, function () {
